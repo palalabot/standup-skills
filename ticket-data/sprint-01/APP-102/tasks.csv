@@ -1,0 +1,9 @@
+id,phase,task,status,ac,depends_on,updated,note
+T1,understand,"Trace the flow: type email + password → Sign in → API call → home page or error message",done,AC1;AC2,,2026-01-13,flow written in journal 2026-01-13
+T2,understand,"Agree the API contract with APP-101: request/response shape, error codes 401 and 429",doing,AC1;AC2;AC4,T1,2026-01-13,waiting on APP-101 to confirm the response format
+T3,happy-path,Login form that calls a fake login API and goes to the home page on success,doing,AC1,T1,2026-01-13,fake API until APP-101 is ready
+T4,test,"Unit tests from AC: success, wrong password, empty fields, too many attempts",todo,AC1;AC2;AC3;AC4;AC5,T3,2026-01-13,write after happy path works; error tests should fail at first
+T5,build,Show "Email or password is incorrect." and keep the email filled in (make the T4 test pass),todo,AC2,T4,2026-01-13,
+T6,build,Empty-field check and highlight (make the T4 test pass),todo,AC3,T4,2026-01-13,
+T7,build,Show the "too many attempts" message on a 429 response (make the T4 test pass),todo,AC4,T4,2026-01-13,
+T8,build,Swap the fake API for the real APP-101 API and test end to end,todo,AC1;AC2;AC4,T5;T6;T7,2026-01-13,needs APP-101
