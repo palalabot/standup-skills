@@ -18,6 +18,15 @@ You don't need to know how to program.
 1. **Claude Code**, the AI assistant this runs in. Install it from <https://claude.com/claude-code> and sign in.
 2. **Your tickets in the `ticket-data` folder.** Your Jira export tool puts them there (see "How your tickets are stored" below).
 
+3. **Install the commands.** They live in this repo's `_claude/skills/` folder. Copy them into your own Claude folder once:
+   ```bash
+   mkdir -p ~/.claude/skills
+   cp -r _claude/skills/* ~/.claude/skills/
+   ```
+   > **Warning:** if you already have skills with the same names (`standup`, `eod`, `plan-tasks`, `analyze-ticket`, `dep-graph`, `analyze-codebase-and-explain`, `techdebt`), this **overwrites** them. Check first with `ls ~/.claude/skills`, and back up or rename any you want to keep.
+
+   Run the copy again whenever you pull updates to this repo.
+
 To start, open a terminal in this folder and type `claude`. Then type the commands below into Claude.
 Every command starts with `/`.
 
