@@ -40,8 +40,8 @@ Explain in plain words:
   - Take detailed problem-solving to a follow-up chat with only the people who need to be there.
   - Talk about the work and the goal, not about how busy you are.
 - **How this repo helps:**
-  - `/standup` writes your Did / Doing / Blocked.
-  - `/eod` records your day so tomorrow's update is ready.
+  - `/standup` checks the Did / Doing / Blocked you wrote (or, if today's is missing, asks you item by item what you did, plan and are blocked on).
+  - `/eod` records your day so tomorrow's `/standup` has something to check your update against.
   - `/analyze-codebase-and-explain` gives you the technical lines and the open unknowns to bring up.
 
 Source for the standup rules: the Scrum Guide, <https://scrumguides.org>.

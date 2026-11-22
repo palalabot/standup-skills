@@ -6,7 +6,7 @@ description: End-of-day check-in. Walks the user through today's tickets and tas
 # /eod
 
 A short guided check-in, about 5 minutes. Ask simple questions one ticket at a time; the user may not be technical.
-What gets saved tonight becomes tomorrow's `/standup`.
+Tomorrow's standup is still written or answered by the user. `/standup` checks it against what gets saved tonight.
 
 ## 1. Gather
 - Current sprint = newest folder in `ticket-data/` by name (ignore `archive/`).

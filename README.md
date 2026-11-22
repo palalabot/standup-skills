@@ -2,8 +2,8 @@
 
 Get ready for your daily standup and your end-of-day status in about 5 minutes each.
 
-You keep your Jira tickets in a folder. An AI assistant (Claude) reads them, asks you a few
-questions, and writes your update for you:
+You keep your Jira tickets in a folder. You write your own standup, and an AI assistant (Claude)
+checks it against your tasks and keeps your task list in step with what you wrote:
 
 > **Did:** login form works against a fake API.
 > **Doing:** writing the unit tests for the login page.
@@ -41,7 +41,8 @@ Every command starts with `/`.
 | 1 | *(run your Jira export tool)* | Your latest tickets land in `ticket-data`. |
 | 2 | `/analyze-ticket` | Claude flags tickets that are unclear, for example ones that don't say how you'd know they're done. |
 | 3 | `/dep-graph` | Claude finds which tickets are waiting on other tickets, including ones nobody wrote down. You approve each one. |
-| 4 | `/standup` | Claude writes your **Did / Doing / Blocked** update. Copy it into chat or read it out loud. |
+| 4 | *(write `ticket-data/<sprint>/standup/<today>.md`)* | Your own **Did / Doing / Blocked**. You are the source of truth, because Jira downloads can be out of date. |
+| 5 | `/standup` | Claude checks what you wrote against `tasks.csv` (using today's date from your computer). No file for today? It asks you, one item at a time, what you did, what you plan and any blockers, and saves your answers as written. If you can't remember, it tells you it will look through your tickets for evidence of what changed, then asks you to confirm each thing it finds.. It lists what doesn't match and offers to update `tasks.csv`. It never rewrites your standup. |
 
 ### End of day
 
@@ -81,11 +82,14 @@ ticket-data/
       tasks.csv              the small steps for this ticket (Claude writes this, with your OK)
     journal/
       2026-01-13.md          your notes for each day
+    standup/
+      2026-01-14.md          the standup you wrote that morning
 ```
 
 - **`ticket.md`**: the ticket text from Jira. Your export tool updates it, and Claude only changes the "blocked by" line if you say yes.
 - **`tasks.csv`**: a small table of steps. You can open it in Excel or Google Sheets. Each row has a step, its status (`todo`, `doing`, `blocked`, `done`), and a short note.
 - **`journal/`**: one file per day with what you did and any links you saved.
+- **`standup/`**: the standup you write each morning. When your standup and `tasks.csv` disagree, your standup wins.
 
 There is a sample sprint in `ticket-data/sprint-01/` you can try the commands on: a simple login feature (login API, login page, "remember me"). It has a few problems on purpose, such as a blocker nobody wrote down and a ticket with vague Acceptance Criteria, so the commands have something to find.
 
@@ -122,7 +126,8 @@ How the commands fit together, from a new sprint to the end of each day.
 | Step | Type this | What you get |
 |------|-----------|--------------|
 | 1 | `/analyze-codebase-and-explain APP-102` | **Where you are** on the ticket, based on the code itself rather than the ticket's status. Plus **unknowns** to clear up early, a few technical lines for standup, and tech debt you could clean up while you're in that code. Saved as `analysis.md` in the ticket folder. |
-| 2 | `/standup` | Your **Did / Doing / Blocked** update. Add the technical lines and top unknown from step 1. |
+| 2 | *(write today's standup file)* | Your own **Did / Doing / Blocked**. Use step 1 for technical lines and the top unknown. |
+| 3 | `/standup` | Checks your standup against `tasks.csv`, flags where Jira looks behind, and updates `tasks.csv` rows you approve. |
 
 ### Each evening
 | Step | Type this | What you get |

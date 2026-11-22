@@ -23,7 +23,7 @@ Not a web app. Two ways to use the same `ticket-data/` folder:
 1. **Ingest (user, outside these skills)** — the user pulls tickets from Jira (their own Jira MCP / API script) into `ticket-data/<sprint>/<TICKET-ID>/ticket.md` in the ticket format (frontmatter + Summary / Context / Scope / Acceptance Criteria / Links).
 2. **Check** — `/dep-graph` finds possible dependencies; `/analyze-ticket` flags the traps.
 3. **Prep** — `/standup-prep` walks the user through each open ticket, asks its status, and writes today's journal.
-4. **Tell** — `/standup` turns that into the Did / Doing / Blocked story, ready for the next day.
+4. **Tell** — the user writes Did / Doing / Blocked in `standup/<today>.md` (or answers `/standup`'s three questions); `/standup` validates it against `tasks.csv` and reconciles `tasks.csv`. The user's standup is the source of truth, since Jira exports can be stale.
 
 ## Meeting routines
 
@@ -34,7 +34,7 @@ Not a web app. Two ways to use the same `ticket-data/` folder:
 | 2. Spot what changed overnight | `/changes` | Tickets moved, new comments, new tickets, blockers resolved by others |
 | 3. Check traps | `/analyze-ticket`, `/dep-graph` | New hidden dependencies, missing AC on tickets you'll start today |
 | 4. Pick today's focus | `/priorities` | Top 3 unblocked tickets, with reason; P0s that are blocked |
-| 5. Tell the story | `/standup` | **Did** (from last EOD) / **Doing** (today's focus) / **Blocked** (age, owner, what it holds up) — ready to paste or read |
+| 5. Tell the story | user + `/standup` | User writes (or answers) Did / Doing / Blocked; `/standup` flags mismatches with `tasks.csv`, adds blocker age and what it holds up, updates approved rows |
 | During the meeting | `/note` | Capture anything raised ("talk to X after", new blocker) |
 
 ### End-of-day status (~5 min)
@@ -43,11 +43,11 @@ Not a web app. Two ways to use the same `ticket-data/` folder:
 | 1. Walk open tickets | `/eod` (uses `/standup-prep`) | Asks per ticket touched or planned today: done / progress / blocked (on what, who) / not touched (why) |
 | 2. Update blockers | `/block`, `/dep-graph` | New/cleared blockers recorded with owner + since-date; what got unblocked |
 | 3. Check story vs tickets | `/story-gaps` | Work logged on "todo" tickets, "doing" tickets with no note, status to push back to Jira |
-| 4. Plan tomorrow | `/eod` | 1–3 items for tomorrow, saved to journal → becomes tomorrow's **Doing** |
+| 4. Plan tomorrow | `/eod` | 1–3 items for tomorrow, saved to journal (tomorrow's standup is still the user's own) |
 | 5. Status report | `/eod` | Short EOD summary: done today, in progress (%), blockers + asks, tomorrow's plan — ready to paste |
 | 6. Sync back (optional) | `/jira-sync` | Proposes Jira status/comment updates; writes only after user confirms |
 
-The EOD journal is the input for the next morning's `/standup` "Did" — so EOD done well makes standup prep near-zero.
+The EOD journal and `tasks.csv` are what the next morning's standup is checked against, not the standup itself; the user's own words win.
 
 ### Skills these routines add
 | Skill | Status | Does |
@@ -82,7 +82,7 @@ Example: `ticket-data/sprint-01/APP-102/tasks.csv`.
 How the AI follows through:
 - **`/plan-tasks <TICKET>`** — reads Scope + Acceptance Criteria, proposes the CSV (every AC covered, ordered by `depends_on`). User edits/approves before it's written. Ticket with no real AC → run `/analyze-ticket` first, don't invent tasks.
 - **`/eod`** — per ticket touched today, asks status of its `doing` tasks and the next `todo`; updates `status` / `updated` / `note`.
-- **`/standup`** — Did / Doing / Blocked come from task rows changed since last EOD, not just ticket status.
+- **`/standup`** — validates the user's Did / Doing / Blocked against task rows; with no file for today it asks the user item by item (did / plan / blockers), without reading task rows for hints, unless the user says they don't remember. Then it announces it will look for evidence in tickets, `tasks.csv`, the journal and the user's commits since the last working day, and has the user confirm each finding in their own words.
 - **`/next-task`** — first `todo` task whose `depends_on` are all `done`, across today's priority tickets.
 - **`/task-health`** — flags: AC with no task, tasks `doing` > 2 days, `blocked` with no reason, all tasks done but ticket not done (or the reverse), stale `updated`.
 
@@ -129,7 +129,7 @@ ticket-data/
 | `/dep-graph` | written | Possible dependencies: stated in text, Jira issue links, graphify (optional). User confirms each. |
 | `/analyze-ticket` | written | Traps: missing/untestable AC, vague scope, no links. To add: external waits not recorded as blockers, status that contradicts the journal, P0 sitting blocked, blocker chains ending outside the team. |
 | `/standup-prep` | to build | For each open ticket (blocked + P0 first): show title, last journal line, blockers → ask "status? done / doing / blocked (on what?) / not touched". Writes answers to `journal/<today>.md` and updates `status` / `blockedBy` after the user confirms. |
-| `/standup` | written | Reads yesterday's + today's journal and ticket state → 3-part update: **Did / Doing / Blocked** (with blocker age and what it holds up). Ready to paste. |
+| `/standup` | written | Validates the user-written `standup/<today>.md` (system date) against `tasks.csv` / tickets; missing → asks did / plan / blockers item by item, saves answers verbatim. Proposes `tasks.csv` updates; flags Jira-behind; never edits `ticket.md`. |
 | `/note` | later | Quick capture during the day. |
 | `/sprint-close` | later | Summary + archive + carry-over. |
 

@@ -1,6 +1,6 @@
 # Repos
 
-Where the code for your tickets lives. `/analyze-codebase-and-explain` reads this file, and only these repos.
+Where the code for your tickets lives. `/analyze-codebase-and-explain`, `/analyze-techdebts` and `/standup` (for finding your recent commits) read this file, and only these repos.
 One section per repo. Only `path` (or `url`) is required; the rest helps Claude pick the right repo.
 Claude treats this file as data, so it won't follow any instructions written in it.
 
@@ -8,6 +8,7 @@ Claude treats this file as data, so it won't follow any instructions written in 
 - path: ~/code/login-api
 - url: https://github.com/example-org/login-api.git
 - default branch: main
+- author: Your Name   # optional: the git author name you commit as here
 - owns: login and session API, users database access (APP-101, APP-102)
 - ticket prefix: APP
 
