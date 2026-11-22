@@ -23,7 +23,7 @@ You don't need to know how to program.
    mkdir -p ~/.claude/skills
    cp -r _claude/skills/* ~/.claude/skills/
    ```
-   > **Warning:** if you already have skills with the same names (`standup`, `eod`, `plan-tasks`, `analyze-ticket`, `dep-graph`, `analyze-codebase-and-explain`, `techdebt`), this **overwrites** them. Check first with `ls ~/.claude/skills`, and back up or rename any you want to keep.
+   > **Warning:** if you already have skills with the same names (`standup`, `eod`, `plan-tasks`, `analyze-ticket`, `dep-graph`, `analyze-codebase-and-explain`, `analyze-techdebts`, `agile-basics`), this **overwrites** them. Check first with `ls ~/.claude/skills`, and back up or rename any you want to keep.
 
    Run the copy again whenever you pull updates to this repo.
 
