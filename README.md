@@ -89,4 +89,40 @@ There is a sample sprint in `ticket-data/sprint-01/` you can try the commands on
 - **`/dep-graph` can use an optional extra tool called graphify** to draw a clickable map of how tickets connect. Claude will ask before installing it. Say no and it still works, just without the map.
 - **No Claude account?** The `embedder/` folder has a different setup for technical users. See `SPEC.md`.
 
-For the full design and open questions, see `SPEC.md`.
+For tips on getting good updates, see `BEST_PRACTICES.md`. For the full design and open questions, see `SPEC.md`.
+
+---
+
+## Full workflow
+
+How the commands fit together, from a new sprint to the end of each day.
+
+### One-time setup
+1. Install Claude Code and open it in this folder (`claude`).
+2. Fill in `ticket-data/repos.md`: one section per code repo, with its folder path (or URL), its default branch, and what it covers. Claude only looks at the repos you list there.
+
+### New sprint
+| Step | Type this | What you get |
+|------|-----------|--------------|
+| 1 | *(run your Jira export tool)* | Tickets in `ticket-data/<sprint>/`. |
+| 2 | `/analyze-ticket` | A list of unclear tickets. Ask your lead about them early. |
+| 3 | `/dep-graph` | Which tickets wait on which, and the blockers nobody wrote down. You approve each change. |
+| 4 | `/plan-tasks APP-102` (per ticket) | Small daily steps in `tasks.csv`, covering every Acceptance Criterion. |
+
+### Each morning
+| Step | Type this | What you get |
+|------|-----------|--------------|
+| 1 | `/analyze-codebase-and-explain APP-102` | **Where you are** on the ticket, based on the code itself rather than the ticket's status. Plus **unknowns** to clear up early, a few technical lines for standup, and tech debt you could clean up while you're in that code. Saved as `analysis.md` in the ticket folder. |
+| 2 | `/standup` | Your **Did / Doing / Blocked** update. Add the technical lines and top unknown from step 1. |
+
+### Each evening
+| Step | Type this | What you get |
+|------|-----------|--------------|
+| 1 | `/eod` | Each ticket marked done, progress, or blocked, plus your plan for tomorrow and a summary to paste. |
+
+### About `/analyze-codebase-and-explain`
+- **It doesn't take the ticket's word for it.** It compares what the ticket says with what the code shows, and lists the differences. When something isn't clear it asks you (or writes it down as an unknown) instead of guessing.
+- **It never changes your code.** It only reads git history and files: no commits, pushes, branch switches, installs, or running builds. The only file it writes is `analysis.md`. It adds to `tasks.csv` or drafts follow-up tickets only if you pick that at the end.
+- **It can run unattended**, for example on a schedule before standup. Then it doesn't stop to ask questions. It lists them under "Unknowns to clarify", and the report is marked `UNATTENDED`. It does stop if it can't find the ticket or `repos.md`, or can't tell which repo holds the code.
+- **graphify is optional.** With it, you get a map of which code depends on which. Without it, Claude searches the code instead.
+- **Want a guarantee on top of the instructions?** Add deny rules for `git commit`, `git push`, and `git checkout` in `.claude/settings.json`.
