@@ -35,6 +35,16 @@ Assume the user is a busy developer juggling many tasks. Vague or partial answer
    - **What do you plan** to do today? Same loop: "Anything else?"
    - **Any blockers?** For each one: what is it waiting on, and who from? Same loop.
    For each item, if they didn't name a ticket, ask "Which ticket is that?" They may answer "none".
+
+   **Moving on.** At the start, tell the user once: "Say `next section` to move on, or `skip section` to leave one out." These work at any prompt in step 1b:
+   - `next section`: stop asking about the current section and go to the next one (Did → Doing → Blocked → save).
+   - `skip section`: write `- (skipped)` for that section and go to the next one.
+   - "no", "that's it" or "nothing else" ends the current section's "Anything else?" loop.
+
+   **Never ask the same thing twice.** Keep a running list of what's already been answered this run, across all three sections:
+   - A ticket or item already given in one section isn't asked about again in another. If a Did answer already mentions a blocker ("still waiting on Ops"), carry it into Blocked and confirm it once ("Keep this as a blocker?"); don't ask for it again.
+   - Don't re-ask "Which ticket is that?" for an item that's already linked to a ticket.
+   - Don't repeat a question the user already answered with "don't know" or "none". Record that answer and move on.
 3. Never suggest items, never pre-fill answers, and never answer for the user.
    **If the user says they don't remember**, tell them: "I'll look into your tickets and check for any evidence of what changed since <last working day>." Then look, read-only, since the last working day:
    - `ticket.md`: status and `updated` changes, and new comments
@@ -42,6 +52,19 @@ Assume the user is a busy developer juggling many tasks. Vague or partial answer
    - the journal lines for those days
    - code, only if `ticket-data/repos.md` exists: `git log --since=<last working day> --author=<author>` in the listed repos, matching commits to ticket IDs. Use the `author:` from `repos.md` if set, otherwise `git config user.name`, and say which one you used
    A vague answer ("some login stuff") narrows the search: look only at the evidence that matches it.
+   **Don't ask about the same ticket twice (no infinite-standup-recursion: the "did you do it? are you sure? but did you?" spiral).** Before asking about a ticket, check whether it's already accounted for:
+   - **confirmed in this run:** the user already answered about it, so never ask again
+   - **already recorded:** since the last working day, its `tasks.csv` rows were updated (by `/eod`, an earlier `/standup`, or the user), or the ticket was moved or had its progress updated in `ticket.md`
+
+   For an already-recorded ticket, don't re-question it. Show the one-line evidence and ask:
+   "APP-102 already shows progress (T3 → done on 2026-01-13, tasks.csv:4). Use that as-is, or skip?"
+   "Use" means that recorded change goes into the standup in its recorded wording, shown before saving. "Skip" leaves it out.
+   Accept these words at any prompt in this step:
+   - `next`: move to the next ticket
+   - `skip`: drop this ticket from the standup
+   - `skip all`: accept every already-recorded ticket as-is and only ask about the rest
+   - `done` or `next section`: stop the evidence review and go to the next section with what's collected
+   The loop ends when every ticket with evidence has been confirmed, used, skipped or passed with `next`.
    Group the findings by ticket and number them, each marked "evidence, not confirmed" with its source (file and line, or commit):
    ```
    APP-102
